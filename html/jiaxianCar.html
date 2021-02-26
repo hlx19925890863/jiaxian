@@ -1,0 +1,279 @@
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document</title><link rel="stylesheet" href="../css/dist/jiaxianCar.min.css"><script src="../jQuery/jquery.min.js"></script></head><body><header><div id="header"><span class="headerLogin"></span><ul><li><span>天河区</span></li><li><span class="shopHome">商城首页</span></li><li><span>移动页</span></li><li><span>我的账户</span></li><li><span class="myCar">我的购物车</span><b class="myCarN" style="color:red;font-weight:100;font-size:12px">0</b></li><li><span>我的订单</span></li><li style="border:none"><span>帮助中心</span></li></ul></div></header><div id="headerB"></div><div id="banner"><div class="banner"><div class="bannerTop"><div class="top1"><input type="checkbox" class="allShop">全选</div><div class="top2">商品信息</div><div class="top3">单价</div><div class="top4">数量</div><div class="top5">小计</div><div class="top6">操作</div></div><div class="bannerMiddle"><!-- <div class="noShop">
+                    <p>购物车空了，快去填充吧~</p>
+                    <a href="./jiaxianLB.html">再去逛逛</a>
+                </div> --><!-- <div class="shops">
+                    <div class="middle1"><input type="checkbox" class="allShop"></div>
+                    <div class="middle2">
+                        <img height="80px" width="80px" src="https://mailgoo.oss-cn-shenzhen.aliyuncs.com/pictures/2021_01_30/1612000262327.jpg" alt="">
+                        <div class="shopName">【越南红心火龙果】富含满满的花青素 吉祥的代表 大果净果约11斤/件
+                        </div>
+                    </div>
+                    <div class="middle3">积分145.00</div>
+                    <div class="middle4">
+                        <input type="number" class="shopNum">
+                        <button class="jia">+</button>
+                        <button class="jian">-</button>
+                    </div>
+                    <div class="middle5">积分145.00</div>
+                    <div class="middle6"><span>删除</span></div>
+                </div> --></div><div class="bannerBottom"><div class="bottomL"><div class="bottom1">已选（<span class="allNum">0</span>）件</div><div class="qKcar">清空购物车</div><div class="bottom2">合计：<span class="allPrice" style="color:red;font-size:18px;font-weight:900">0.00</span></div></div><div class="bottomR">立即下单</div></div></div></div><script>let user = localStorage.getItem('username');
+        let banner = document.querySelector('.banner');
+        let bannerMiddle = document.querySelector('.bannerMiddle');
+        let allShop = document.querySelector('.allShop');
+        let allNum = document.querySelector('.allNum');
+        let allPrice = document.querySelector('.allPrice');
+
+        let myCarN = document.querySelector('.myCarN');
+        myCarNum();
+        // 购物车总单品数量
+        function myCarNum() {
+            $.get('../api/getCar.php', {
+                username: user
+            }, function (res) {
+                res = JSON.parse(res);
+                myCarN.innerHTML = res.length;
+            })
+        }
+
+        getCar();
+
+        function getCar() {
+            $.get('../api/getCar.php', {
+                username: user
+            }, function (res) {
+                res = JSON.parse(res);
+                if (res == '') {
+                    bannerMiddle.innerHTML = `
+                    <div class="noShop">
+                        <p>购物车空了，快去填充吧~</p>
+                        <a href="./jiaxianLB.html">再去逛逛</a>
+                    </div>
+                    `;
+                } else {
+                    render(res);
+                }
+            })
+        }
+
+        function render(res) {
+            res.forEach((item) => {
+                let xhr = new XMLHttpRequest();
+                xhr.open('get', '../json/Car.json');
+                xhr.send();
+                let id = item.shopid;
+                let shopNum = item.shopNum;
+                xhr.onload = function () {
+                    let res1 = JSON.parse(xhr.responseText).content;
+                    res1.forEach((item) => {
+                        if (item.id == id) {
+                            bannerMiddle.innerHTML += `
+                        <div class="shops">
+                            <div class="middle1"><input type="checkbox" class="oneShop" oneShopid="${item.id}"></div>
+                            <div class="middle2">
+                                <img height="80px" width="80px" src="${item.picUrl}" alt="">
+                                   <div class="shopName">${item.name}</div>
+                            </div>
+                            <div class="middle3">积分<span>${item.skus[0].realPrice.toFixed(2)}</span></div>
+                            <div class="middle4">
+                                <input inputId="${item.id}" type="number" class="shopNum" value="${shopNum}">
+                                <button class="jia" jiaId="${item.id}">+</button>
+                                <button class="jian" jianId="${item.id}">-</button>
+                            </div>
+                            <div class="middle5">积分<span>${(item.skus[0].realPrice*shopNum).toFixed(2)}</span></div>
+                            <div class="middle6"><span idx="${item.id}">删除</span></div>
+                        </div>
+                            `;
+                        }
+                    })
+                    let shopNum1 = document.querySelectorAll('.shopNum');
+                    shopNum1.forEach((item) => {
+                        item.onblur = function () {
+                            if (item.value * 1 < 1) {
+                                item.value = 1;
+                            }
+                            $.get('../api/blurCar.php', {
+                                username: user,
+                                shopId: item.getAttribute('inputId'),
+                                shopNum: item.value
+                            })
+                            item.parentNode.nextElementSibling.firstElementChild.innerHTML = (
+                                item.value * item.parentNode.previousElementSibling
+                                .firstElementChild.innerHTML).toFixed(2);
+                        }
+                    })
+                }
+            })
+        }
+
+        window.onload = function () {
+            banner.onclick = function (e) {
+                if (e.target.innerHTML == '删除') {
+                    let t = confirm('你确定要删除该商品吗？');
+                    if (t == true) {
+                        e.target.parentNode.parentNode.remove();
+                        $.get('../api/delCar.php', {
+                            username: user,
+                            shopid: e.target.getAttribute('idx')
+                        })
+                        myCarNum();
+                        $.get('../api/getCar.php', {
+                            username: user
+                        }, function (res) {
+                            res = JSON.parse(res);
+                            if (res == '') {
+                                bannerMiddle.innerHTML = `
+                                    <div class="noShop">
+                                        <p>购物车空了，快去填充吧~</p>
+                                        <a href="./jiaxianLB.html">再去逛逛</a>
+                                    </div>
+                                `;
+                            }
+                        })
+                    }
+                }
+                if (e.target.classList == 'jia') {
+                    e.target.parentNode.firstElementChild.value++;
+                    Price(e);
+                    $.get('../api/jiaCar.php', {
+                        username: user,
+                        shopId: e.target.getAttribute('jiaId')
+                    })
+                }
+                if (e.target.classList == 'jian') {
+                    if (e.target.parentNode.firstElementChild.value <= 1) {
+                        alert('已经是最少数量了！');
+                    } else {
+                        e.target.parentNode.firstElementChild.value--;
+                        Price(e);
+                        $.get('../api/jianCar.php', {
+                            username: user,
+                            shopId: e.target.getAttribute('jianId')
+                        })
+                    }
+                }
+                if (e.target.classList == 'allShop') {
+                    let oneShop = document.querySelectorAll('.oneShop');
+                    if (e.target.checked == true) {
+                        oneShop.forEach((item) => {
+                            item.checked = true;
+                        })
+                    } else {
+                        oneShop.forEach((item) => {
+                            item.checked = false;
+                        })
+                    }
+                }
+                if (e.target.classList == 'oneShop') {
+                    let oneShop = document.querySelectorAll('.oneShop');
+                    let allN = 0;
+                    for (let i = 0; i < oneShop.length; i++) {
+                        if (oneShop[i].checked == false) {
+                            allShop.checked = false;
+                            break
+                        }
+                        allShop.checked = true;
+                    }
+                }
+                allSshopNum();
+                allShopPrice();
+                if (e.target.classList == 'qKcar') {
+                    $.get('../api/getCar.php', {
+                        username: user
+                    }, function (res) {
+                        res = JSON.parse(res);
+                        if (res == '') {
+                            alert('你还未添加任何商品');
+                        } else {
+                            let t = confirm('您要清空所有商品吗？');
+                            if (t == true) {
+                                $.get('../api/delAllCar.php', {
+                                    username: user
+                                })
+                                myCarNum();
+                                allShop.checked = false;
+                                bannerMiddle.innerHTML = `
+                                    <div class="noShop">
+                                        <p>购物车空了，快去填充吧~</p>
+                                        <a href="./jiaxianLB.html">再去逛逛</a>
+                                    </div>
+                                `;
+                                let z = 0;
+                                allPrice.innerHTML = z.toFixed(2);
+                                allNum.innerHTML = 0;
+                            }
+                        }
+                    })
+                }
+                if (e.target.classList == 'bottomR') {
+                    let oneShop = document.querySelectorAll('.oneShop');
+                    if (allPrice.innerHTML == 0) {
+                        alert('您还未选择任何商品');
+                    } else {
+                        let t = confirm('一共是' + allPrice.innerHTML + '元，确定立即下单吗？');
+                        if (t == true) {
+                            oneShop.forEach((item) => {
+                                if (item.checked == true) {
+                                    item.parentNode.parentNode.remove();
+                                    $.get('../api/delCar.php', {
+                                        username: user,
+                                        shopid: item.getAttribute('oneShopid')
+                                    })
+                                }
+                            })
+                            alert('下单成功！');
+                            allSshopNum();
+                            allShopPrice();
+                            myCarNum();
+                            allShop.checked = false;
+                            $.get('../api/getCar.php', {
+                                username: user
+                            }, function (res) {
+                                res = JSON.parse(res);
+                                if (res == '') {
+                                    bannerMiddle.innerHTML = `
+                                    <div class="noShop">
+                                        <p>购物车空了，快去填充吧~</p>
+                                        <a href="./jiaxianLB.html">再去逛逛</a>
+                                    </div>
+                                `;
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+
+
+
+
+        }
+        // 渲染单一商品总价格
+        function Price(e) {
+            e.target.parentNode.nextElementSibling.firstElementChild.innerHTML = (e.target.parentNode
+                .firstElementChild.value * e.target.parentNode.previousElementSibling.firstElementChild
+                .innerHTML).toFixed(2);
+        }
+        // 已勾选的单品数量
+        function allSshopNum() {
+            let oneShop = document.querySelectorAll('.oneShop');
+            let n = 0;
+            oneShop.forEach((item) => {
+                if (item.checked == true) {
+                    n++;
+                }
+            })
+            allNum.innerHTML = n;
+        }
+        // 所有商品总价格
+        function allShopPrice() {
+            let oneShop = document.querySelectorAll('.oneShop');
+            let allp = 0;
+            oneShop.forEach((item) => {
+                if (item.checked == true) {
+                    let p = item.parentNode.nextElementSibling.nextElementSibling.nextElementSibling
+                        .nextElementSibling.firstElementChild.innerHTML * 1;
+                    allp += p;
+                }
+            })
+            allPrice.innerHTML = allp.toFixed(2);
+        }</script><script src="../js/jiaxianDenglu.js"></script></body>

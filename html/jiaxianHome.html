@@ -1,0 +1,196 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document</title><link rel="stylesheet" href="../swiper-master/package/swiper-bundle.min.css"><link rel="stylesheet" href="../css/dist/jiaxianHome.min.css"><script src="../jQuery/jquery.min.js"></script><script src="../swiper-master/package/swiper-bundle.min.js"></script></head><body><header><div id="header"><span class="headerLogin"></span><ul><li><span>天河区</span></li><li><span class="shopHome">商城首页</span></li><li><span>移动页</span></li><li><span>我的账户</span></li><li><span class="myCar">我的购物车</span><b class="myCarN" style="color:red;font-weight:100;font-size:12px">0</b></li><li><span>我的订单</span></li><li style="border:none"><span>帮助中心</span></li></ul></div></header><div id="yinCang"><div class="yinCang"><img src="http://gdnymall.oss-cn-shenzhen.aliyuncs.com/default/1560704120403-logo.png" alt=""></div></div><div id="headerB"></div><div id="banner"><div id="banner"><ul class="bannerUl"></ul><div class="bannerR"></div></div></div><div id="links"><div class="links"><img src="https://gdnymall.oss-cn-shenzhen.aliyuncs.com/default/1562754870180-%E5%88%86%E7%B1%BB_%E7%B2%AE%E6%B2%B9.jpg" alt=""> <img src="https://gdnymall.oss-cn-shenzhen.aliyuncs.com/default/1562754878243-%E5%88%86%E7%B1%BB_%E9%85%92%E6%B0%B4%E9%A3%9F%E5%93%81.jpg" alt=""> <img src="https://gdnymall.oss-cn-shenzhen.aliyuncs.com/default/1562754887406-%E5%88%86%E7%B1%BB_%E5%A5%B6%E5%88%B6%E5%93%81.jpg" alt=""> <img src="https://gdnymall.oss-cn-shenzhen.aliyuncs.com/default/1562754892925-%E5%88%86%E7%B1%BB_%E7%94%9F%E9%B2%9C%E8%94%AC%E6%9E%9C.jpg" alt=""></div></div><div id="shops"><div class="shops"><div class="swiper-container"><h1>生鲜蔬果</h1><div class="swiper-wrapper"><div class="swiper-slide shops1-1"><!-- <div>
+                            <img src="https://mailgoo.oss-cn-shenzhen.aliyuncs.com/pictures/2020_03_09/1583722715584.jpg" alt="">
+                            <h3>广垦“名富牌”有机番石榴（6个装）约5斤 清甜松脆【广东省包邮】</h3>
+                            <p>66.00</p>
+                        </div> --></div><div class="swiper-slide shops1-2"></div><div class="swiper-slide shops1-3"><!-- <div>
+                            <img src="https://mailgoo.oss-cn-shenzhen.aliyuncs.com/pictures/2020_03_09/1583722715584.jpg" alt="">
+                            <h3>广垦“名富牌”有机番石榴（6个装）约5斤 清甜松脆【广东省包邮】</h3>
+                            <p>66.00</p>
+                        </div> --></div></div><!-- 如果需要分页器 --><div class="swiper-pagination"></div></div><div class="swiper-container"><h1>粮油副食</h1><div class="swiper-wrapper"><div class="swiper-slide shops2-1"></div><div class="swiper-slide shops2-2"></div><div class="swiper-slide shops2-3"></div></div><div class="swiper-pagination"></div></div><div class="swiper-container"><h1>乳制茶饮</h1><div class="swiper-wrapper"><div class="swiper-slide shops3-1"></div><div class="swiper-slide shops3-2"></div><div class="swiper-slide shops3-3"></div><div class="swiper-slide shops3-4"></div></div><div class="swiper-pagination"></div></div></div><a id="goToHome" href="./jiaxianHome.html">回到首页</a><div id="goToCar">购物车(<span>0</span>)</div><div id="goTop">回到顶部</div></div><script>let shops1_1 = document.querySelector('.shops1-1');
+        let shops1_2 = document.querySelector('.shops1-2');
+        let shops1_3 = document.querySelector('.shops1-3');
+        let shops2_1 = document.querySelector('.shops2-1');
+        let shops2_2 = document.querySelector('.shops2-2');
+        let shops2_3 = document.querySelector('.shops2-3');
+        let shops3_1 = document.querySelector('.shops3-1');
+        let shops3_2 = document.querySelector('.shops3-2');
+        let shops3_3 = document.querySelector('.shops3-3');
+        let shops3_4 = document.querySelector('.shops3-4');
+
+        let myCarN = document.querySelector('.myCarN');
+        let user = localStorage.getItem('username');
+        let goToCar = document.querySelector('#goToCar span');
+        myCarNum();
+
+        function myCarNum() {
+            $.get('../api/getCar.php', {
+                username: user
+            }, function (res) {
+                res = JSON.parse(res);
+                myCarN.innerHTML = res.length;
+                goToCar.innerHTML = res.length;
+            })
+        }
+
+        getata('../json/jiaxianHome.json');
+        getShop('../json/home_shops_1-1.json', shops1_1);
+        getShop('../json/home_shops_1-2.json', shops1_2);
+        getShop('../json/home_shops_1-3.json', shops1_3);
+        getShop('../json/home_shops_2-1.json', shops2_1);
+        getShop('../json/home_shops_2-2.json', shops2_2);
+        getShop('../json/home_shops_2-3.json', shops2_3);
+        getShop('../json/home_shops_3-1.json', shops3_1);
+        getShop('../json/home_shops_3-2.json', shops3_2);
+        getShop('../json/home_shops_3-3.json', shops3_3);
+        getShop('../json/home_shops_3-4.json', shops3_4);
+
+        function getata(url) {
+            let xhr = new XMLHttpRequest();
+            xhr.open('get', url);
+            xhr.send();
+            xhr.onload = function () {
+                let res = JSON.parse(xhr.responseText);
+                render(res);
+            }
+        }
+
+        function render(data) {
+            let res = data.navCatList;
+            let bannerUl = document.querySelector('.bannerUl');
+            res.forEach((item) => {
+                bannerUl.innerHTML += `
+                    <li idx="${item.id}">${item.name}</li>
+                `;
+            })
+            let bannerLi = document.querySelectorAll('.bannerUl li');
+            let bannerR = document.querySelector('.bannerR');
+            bannerLi.forEach((item, index) => {
+                item.onmouseover = function () {
+                    bannerR.style.display = 'block';
+                    item.style.backgroundColor = '#fff';
+                    item.style.color = '#000';
+                    bannerR.innerHTML = '';
+                    res[index].children.forEach((item) => {
+                        bannerR.innerHTML += `
+                            <h1 idx="${item.id}">${item.name}</h1>    
+                        `;
+                        for (let i = 0; i < item.children.length; i++) {
+                            bannerR.innerHTML +=
+                                `<span idx="${item.children[i].id}" pid="${item.children[i].pid}">${item.children[i].name}</span>`;
+                        }
+                    })
+                    bannerR.style.height = null;
+                    if (bannerR.offsetHeight < 500) {
+                        bannerR.style.height = '500px';
+                    }
+                    spanDianJi();
+                }
+                item.onmouseout = function () {
+                    bannerR.style.display = 'none';
+                    item.style.backgroundColor = null;
+                    item.style.color = '#ccc';
+                }
+            })
+            bannerR.onmouseover = function () {
+                bannerR.style.display = 'block';
+            }
+            bannerR.onmouseout = function () {
+                bannerR.style.display = 'none';
+            }
+
+        }
+
+        function spanDianJi() {
+            let h1Btn = document.querySelectorAll('.bannerR h1');
+            h1Btn.forEach((item) => {
+                item.onclick = function () {
+                    let idx = item.getAttribute('idx');
+                    open('./jiaxianLB.html?id=' + idx, '_self');
+                }
+            })
+            let spanBtn = document.querySelectorAll('.bannerR span');
+            spanBtn.forEach((item) => {
+                item.onclick = function () {
+                    let idx = item.getAttribute('idx');
+                    open('./jiaxianLB.html?id=' + idx, '_self');
+                }
+            })
+        }
+
+        var mySwiper = new Swiper('.swiper-container', {
+            loop: false, // 循环模式选项
+            // 如果需要分页器
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            // 自动轮播
+            autoplay: {
+                // 触碰后不停止轮播
+                disableOnInteraction: false,
+            }
+        });
+
+        function getShop(url, box) {
+            let xhr = new XMLHttpRequest();
+            xhr.open('get', url);
+            xhr.send();
+            xhr.onload = function () {
+                let res = JSON.parse(xhr.responseText);
+                render1(res, box);
+            }
+        }
+
+        function render1(data, box) {
+            let res = data;
+            res.forEach((item) => {
+                box.innerHTML += `
+                <div idx="${item.id}">
+                    <img src="${item.goodsDetail.picUrl}" alt="">
+                    <h3>${item.goodsDetail.name}</h3>
+                    <p>${item.realPrice.toFixed(2)}<span>元</span></p>
+                </div>
+            `;
+            })
+            divDj();
+        }
+
+        function divDj() {
+            let div = document.querySelectorAll('.swiper-slide div');
+            div.forEach((item) => {
+                item.onclick = function () {
+                    let idx = item.getAttribute('idx');
+                    open('./jiaxianXiangqing.html?id=' + idx, '_self');
+                }
+            })
+        }
+
+        let yinCang = document.querySelector('#yinCang');
+        let goTop = document.querySelector('#goTop');
+        window.onscroll = function () {
+            if (scrollY > 300) {
+                yinCang.style.height = '70px';
+                goTop.style.display = 'block';
+                yinCang.style.borderBottom = '1px solid #ccc';
+            }
+            if (scrollY <= 300) {
+                yinCang.style.height = '0px';
+                goTop.style.display = 'none';
+                yinCang.style.borderBottom = '0px solid #ccc';
+            }
+        }
+        goTop.onclick = function () {
+            scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        $('#goToCar').on('click', function () {
+            if (user == null) {
+                alert('您还未登录，请先登录');
+                open('./jiaxianLogin.html', '_self');
+            } else {
+                open('./jiaxianCar.html', '_self');
+            }
+        })</script><script src="../js/jiaxianDenglu.js"></script></body></html>

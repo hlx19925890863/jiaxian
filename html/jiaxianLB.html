@@ -1,0 +1,113 @@
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document</title><link rel="stylesheet" href="../css/dist/jiaxianLB.min.css"><script src="../jQuery/jquery.min.js"></script></head><body><header><div id="header"><span class="headerLogin"></span><ul><li><span>天河区</span></li><li><span class="shopHome">商城首页</span></li><li><span>移动页</span></li><li><span>我的账户</span></li><li><span class="myCar">我的购物车</span><b class="myCarN" style="color:red;font-weight:100;font-size:12px">0</b></li><li><span>我的订单</span></li><li style="border:none"><span>帮助中心</span></li></ul></div></header><div id="yinCang"><div class="yinCang"><img src="http://gdnymall.oss-cn-shenzhen.aliyuncs.com/default/1560704120403-logo.png" alt=""></div></div><div id="headerB"></div><div id="banner"><div class="banner"><!-- <div>
+                <img src="https://mailgoo.oss-cn-shenzhen.aliyuncs.com/pictures/2020_03_09/1583722715584.jpg" alt="">
+                <h3>广垦“名富牌”有机番石榴（6个装）约5斤 清甜松脆【广东省包邮】</h3>
+                <p>66.00<span>元</span></p>
+                <button>加入购物车</button>
+            </div> --></div></div><a id="goToHome" href="./jiaxianHome.html">回到首页</a><div id="goToCar">购物车(<span>0</span>)</div><div id="goTop">回到顶部</div><script>let banner = document.querySelector('.banner');
+        let num = 1;
+        let goToCar = document.querySelector('#goToCar span');
+
+        let myCarN = document.querySelector('.myCarN');
+        let user = localStorage.getItem('username');
+        myCarNum();
+
+        function myCarNum() {
+            $.get('../api/getCar.php', {
+                username: user
+            }, function (res) {
+                res = JSON.parse(res);
+                myCarN.innerHTML = res.length;
+                goToCar.innerHTML = res.length;
+            })
+        }
+
+        getData('../json/LB' + num + '.json');
+
+        function getData(url) {
+            let xhr = new XMLHttpRequest();
+            xhr.open('get', url);
+            xhr.send();
+            xhr.onload = function () {
+                let res = JSON.parse(xhr.responseText);
+                render(res);
+                flag = true;
+            }
+        }
+
+        function render(data) {
+            let res = data.content;
+            res.forEach((item) => {
+                banner.innerHTML += `
+                <div idx=${item.id} class="shops">
+                    <img src="${item.picUrl}" alt="">
+                    <h3>${item.name}</h3>
+                    <p>${item.skus[0].realPrice.toFixed(2)}<span>元</span></p>
+                    <button class="addBtn" idx=${item.id}>加入购物车</button>
+                </div>
+                `;
+            })
+            shopDj();
+        }
+
+        function shopDj() {
+            let shops = document.querySelectorAll('.shops');
+            let addBtn = document.querySelectorAll('.addBtn');
+
+            shops.forEach((item) => {
+                item.onclick = function () {
+                    let shopIdx = item.getAttribute('idx');
+                    open('./jiaxianXiangqing.html?id=' + shopIdx, '_self');
+                }
+            })
+            let btn = document.querySelectorAll('button');
+            btn.forEach((item) => {
+                item.onclick = function (e) {
+                    let btnIdx = item.getAttribute('idx');
+                    e.stopPropagation();
+                    $.get('../api/jiaCar.php', {
+                        username: user,
+                        shopId: btnIdx
+                    }, function () {
+                        alert('添加成功！');
+                        myCarNum();
+                    })
+                }
+            })
+        }
+
+        let yinCang = document.querySelector('#yinCang');
+        let goTop = document.querySelector('#goTop');
+        window.onscroll = function () {
+            if (scrollY > 300) {
+                yinCang.style.height = '70px';
+                goTop.style.display = 'block';
+                yinCang.style.borderBottom = '1px solid #ccc';
+            }
+            if (scrollY > 800) {
+                if (flag) {
+                    flag = false;
+                    num++;
+                    getData('../json/LB' + num + '.json');
+                }
+            }
+            if (scrollY <= 300) {
+                yinCang.style.height = '0px';
+                goTop.style.display = 'none';
+                yinCang.style.borderBottom = '0px solid #ccc';
+            }
+        }
+        goTop.onclick = function () {
+            scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        $('#goToCar').on('click', function () {
+            if (user == null) {
+                alert('您还未登录，请先登录');
+                open('./jiaxianLogin.html', '_self');
+            } else {
+                open('./jiaxianCar.html', '_self');
+            }
+        })</script><script src="../js/jiaxianDenglu.js"></script></body>

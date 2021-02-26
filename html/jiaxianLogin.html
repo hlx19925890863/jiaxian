@@ -1,0 +1,205 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document</title><link rel="stylesheet" href="../css/dist/jiaxianLogin.min.css"><script src="../jQuery/jquery.min.js"></script><script src="../validation/dist/jquery.validate.min.js"></script><script src="../validation/dist/localization/messages_zh.min.js"></script><style>#zcdiv{width:400px;background-color:#fff;border:1px solid green;position:fixed;top:50px;left:35%;display:none;border-radius:6px}#zcdiv h1{line-height:36px;font-size:20px;padding-left:20px;font-weight:100;border-bottom:1px solid #999}#zcdiv #zcBox p{margin:30px 0;padding-left:20px;position:relative}#zcdiv #zcBox p input[type=text]{width:250px}#zcdiv #zcBox p input[type=password]{width:250px}#zcdiv #zcBox .lastP{padding-right:50px;display:flex;justify-content:space-between;border-top:1px solid #ccc;padding-top:10px;margin-top:5px;margin-bottom:10px}#zcdiv #zcBox .lastP .goLogin{display:inline-block;width:70px;height:20px;border:1px solid #000;font-size:14px;text-align:center;line-height:20px;background-color:#ddd;border-radius:5px}#zcdiv #zcBox .lastP .goZhuce{width:70px;height:24px;border:1px solid #000;background-color:green;border-radius:5px;color:#fff;cursor:pointer}#zcdiv #zcBox p .error{color:red;font-size:14px}#zcdiv #zcBox p #username1-error{position:absolute;top:25px;left:106px}#zcdiv #zcBox p #yzm-error{position:absolute;top:25px;left:106px}#zcdiv #zcBox p #password-error{position:absolute;top:25px;left:106px}#zcdiv #zcBox p #password1-error{position:absolute;top:25px;left:106px}#zcdiv #zcBox p #check-error{position:absolute;top:25px;left:106px}</style></head><body><div id="header"><div class="logo"></div></div><div id="banner"><div class="banner"><div class="loginBox"><p class="tab"><span class="but">账号登录</span> <span>验证码登录</span></p><div><form id="login"><p><label for="">用户名：</label> <input type="text" name="username" class="username" placeholder="请输入账号" style="height:25px;width:213px"></p><p><label for="">密&nbsp;&nbsp;&nbsp;码：</label> <input type="password" name="password" class="password" placeholder="请输入密码" style="height:25px;width:213px"></p><p class="read"><input type="checkbox" name="check"> 我已经阅读并同意<span>《用户协议》</span>和<span>《隐私政策》</span></p><button id="loginBtn">登录</button></form><form id="yanzheng" style="display:none"><p><label for="">手机号：</label> <input type="text" name="username" class="telname" placeholder="请输入账号" style="height:25px;width:213px"></p><p style="margin-bottom:0"><label for="">验证码：</label> <input type="text" name="password" class="telYzm" placeholder="请输入验证码" style="height:25px;width:120px"> <span id="yzBtn" style="display:inline-block;width:70px;height:29px;background-color:green;color:#fff;font-size:14px;line-height:29px;text-align:center;padding:0 5px;cursor:pointer">获取验证码</span></p><p class="read" style="margin-top:6px"><input type="checkbox" id="loginCheck" name="check"> 我已经阅读并同意<span>《用户协议》</span>和<span>《隐私政策》</span></p><button id="loginBtn">登录</button></form></div><p class="zhuce"><span class="zhuceNow">立即注册</span><span>忘记密码</span></p></div></div></div><div id="zcdiv"><h1>新用户注册</h1><form id="zcBox"><p style="padding-left:36px"><label for="">手机号：</label> <input type="text" placeholder="请输入您的注册手机号" id="username1" name="username"></p><p style="padding-left:36px"><label for="">验证码：</label> <input style="width:150px" type="text" placeholder="请输入您的短信验证码" name="yzm" class="zCyzm"> <span id="zhuceYzm" style="display:inline-block;width:95px;height:21px;background-color:green;color:#fff;font-size:14px;text-align:center;line-height:21px;cursor:pointer">获取验证码</span></p><p><label for="">登录密码：</label> <input type="password" placeholder="密码由6-12位，字母开头加数字组成" name="password" id="password"></p><p><label for="">确认密码：</label> <input type="password" placeholder="请再次确认登录密码" name="password1" id="password1"></p><p><span>服务协议：</span><input type="checkbox" name="check"><span style="font-size:14px">我已经阅读并同意<b style="font-size:14px;color:green;cursor:pointer">《佳鲜网服务协议》</b></span></p><p class="lastP"><span class="goLogin">去登陆</span><button class="goZhuce">立即注册</button></p></form></div><script>$('.tab span').on('click', function () {
+            $(this).css({
+                color: 'green',
+                borderBottom: '1px solid green'
+            });
+            $('form').eq($(this).index()).css('display', 'block');
+            $(this).siblings().css({
+                color: '#999',
+                borderBottom: 'none'
+            });
+            $('form').eq($(this).index()).siblings().css('display', 'none');
+        })
+        // 注册验证码
+        $('#zhuceYzm').on('click', function () {
+            let arr = [];
+            for (let i = 0; i < 6; i++) {
+                let yzm = parseInt(Math.random() * 10);
+                arr.push(yzm);
+            }
+            let num = '';
+            arr.forEach((item) => {
+                let num1 = item.toString();
+                num = num + num1;
+            })
+            localStorage.setItem('注册验证码', num);
+            alert('验证码为' + num);
+        })
+        // 登录验证码
+        $('#yzBtn').on('click', function () {
+            let arr = [];
+            for (let i = 0; i < 6; i++) {
+                let yzm = parseInt(Math.random() * 10);
+                arr.push(yzm);
+            }
+            let num = '';
+            arr.forEach((item) => {
+                let num1 = item.toString();
+                num = num + num1;
+            })
+            localStorage.setItem('登录验证码', num);
+            alert('验证码为' + num);
+        })
+        // 创建电话号码格式
+        $.validator.addMethod('tel', function (value, element) {
+            var tel = /^1[35789]\d{9}$/;
+            return this.optional(element) || (tel.test(value));
+        }, '电话号码格式错误');
+        // 创建密码格式
+        $.validator.addMethod('mima', function (value, element) {
+            var mima = /^[a-zA-Z][a-zA-Z\d]{5,11}$/;
+            return this.optional(element) || (mima.test(value));
+        }, '密码格式错误');
+        // 账号密码登录表单
+        $('#login').validate({
+            rules: {
+                username: {
+                    required: true,
+                    tel: true
+                },
+                password: {
+                    required: true
+                },
+                check: {
+                    required: true
+                }
+            },
+            messages: {
+                username: {
+                    required: '用户名不能为空',
+                    tel: '手机号格式不正确'
+                },
+                password: '密码不能为空',
+                check: '请勾选'
+            },
+            submitHandler: function () {
+                $.get('../api/getLogin.php', {
+                    username: $('.username').val(),
+                    password: $('.password').val()
+                }, function (res) {
+                    // res = JSON.parse(res);
+                    alert(res);
+                    if (res == '登录成功') {
+                        localStorage.setItem('username', $('.username').val());
+                        open('./jiaxianHome.html', '_self');
+                    }
+                })
+            }
+        });
+        // 手机验证码登录表单
+        $('#yanzheng').validate({
+            rules: {
+                username: {
+                    required: true,
+                    tel: true
+                },
+                password: {
+                    required: true
+                },
+                check: {
+                    required: true
+                }
+            },
+            messages: {
+                username: {
+                    required: '手机号不能为空'
+                },
+                password: '验证码不能为空',
+                check: '请勾选'
+            },
+            submitHandler: function () {
+                if ($('.telYzm').val() != localStorage.getItem('登录验证码')) {
+                    alert('验证码错误');
+                } else {
+                    $.get('../api/getLoginTel.php', {
+                        username: $('.telname').val()
+                    }, function (res) {
+                        alert(res);
+                        if (res == '登录成功') {
+                            localStorage.setItem('username', $('.telname').val());
+                            open('./jiaxianHome.html', '_self');
+                        }
+                    })
+                }
+            }
+        })
+        $('#yzBtn').on('click', function () {
+            console.log(1);
+        })
+        $('.zhuceNow').on('click', function () {
+            $('#zcdiv').css('display', 'block');
+        })
+        $('.goLogin').on('click', function () {
+            $('#zcdiv').css({
+                display: 'none'
+            });
+            $('#username1').val('');
+            $('.zCyzm').val('');
+            $('#password').val('');
+            $('#password1').val('');
+        })
+        $('.goLogin').css('cursor', 'pointer');
+        // 注册表单
+        $('#zcBox').validate({
+            rules: {
+                username: {
+                    required: true,
+                    tel: true
+                },
+                yzm: {
+                    required: true
+
+                },
+                password: {
+                    required: true,
+                    mima: true
+                },
+                password1: {
+                    required: true,
+
+                    equalTo: "#password"
+                },
+                check: {
+                    required: true
+                }
+            },
+            messages: {
+                username: {
+                    required: '请输入手机号',
+                    tel: '请输入正确的手机号'
+                },
+                yzm: {
+                    required: '请输入验证码'
+                },
+                password: {
+                    required: '请输入密码',
+                    mima: '密码格式不正确'
+                },
+                password1: {
+                    required: '请再次输入密码',
+                    equalTo: "密码与上次不一样"
+                },
+                check: '请勾选'
+            },
+            submitHandler: function () {
+                if ($('.zCyzm').val() != localStorage.getItem('注册验证码')) {
+                    alert('验证码错误');
+                } else {
+                    $.get('../api/zhuce.php', {
+                        username: $('#username1').val(),
+                        password: $('#password').val()
+                    }, function (res) {
+                        alert(res);
+                        if (res == '注册成功') {
+                            $('#zcdiv').css({
+                                display: 'none'
+                            });
+                            $('#username1').val('');
+                            $('.zCyzm').val('');
+                            $('#password').val('');
+                            $('#password1').val('');
+                        }
+                    })
+                }
+            }
+        })</script></body></html>

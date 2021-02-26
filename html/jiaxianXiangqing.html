@@ -1,0 +1,140 @@
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document</title><link rel="stylesheet" href="../swiper-master/package/swiper-bundle.min.css"><link rel="stylesheet" href="../css/dist/jiaxianXiangqing.min.css"><script src="../jQuery/jquery.min.js"></script><script src="../swiper-master/package/swiper-bundle.min.js"></script></head><body><header><div id="header"><span class="headerLogin"></span><ul><li><span>天河区</span></li><li><span class="shopHome">商城首页</span></li><li><span>移动页</span></li><li><span>我的账户</span></li><li><span class="myCar">我的购物车</span><b class="myCarN" style="color:red;font-weight:100;font-size:12px">0</b></li><li><span>我的订单</span></li><li style="border:none"><span>帮助中心</span></li></ul></div></header><div id="headerB"></div><div id="banner"><div class="banner"></div></div><script>let idx = location.search.slice(1).split('=')[1];
+        let xhr = new XMLHttpRequest();
+        xhr.open('get', '../json/Car.json');
+        xhr.send();
+        xhr.onload = function () {
+            let res = JSON.parse(xhr.responseText).content;
+            let banner = document.querySelector('.banner');
+            res.forEach((item) => {
+                if (item.id == idx) {
+                    let key = Object.keys(item.skus[0].specInfos);
+                    banner.innerHTML = `
+            <div class="bannerL">
+                <div class="swiper-container gallery-top">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                    </div>
+                </div>
+                <div class="swiper-container gallery-thumbs">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                        <div class="swiper-slide"><img
+                                src="${item.picUrl}"
+                                alt=""></div>
+                    </div>
+                </div>
+            </div>
+            <div class="bannerR">
+                <h2>${item.name}</h2>
+                <div class="price">
+                    <p>积分<b>${item.skus[0].realPrice.toFixed(2)}</b></p>
+                    <p>支付方式<span>积分抵扣，不足可支付宝或微信补差购买</span></p>
+                    <p>配送提示<span>第三方快递配送费</span></p>
+                </div>
+                <p>配送区域<select name="" id="">
+                    <option value="">广东/广州市/天河区</option>
+                    <option value="">广东/广州市/海珠区</option>
+                    <option value="">广东/广州市/白云区</option>
+                </select></p>
+                <p>联系客服<b>QQ交谈</b></p>
+                <p>选择${key[0]}<span class="gg">${item.skus[0].specInfos[key]}</span></p>
+                <p>商品库存<b>有货</b></p>
+                <p>起购量：1起购</p>
+                <div class="add">
+                    <input type="number" value="1" class="shopNum"><button class="jia">+</button><button class="jian">-</button>
+                    <div class="rightnow" idxx=${item.id}>立即兑换</div>
+                    <div class="addCar" idx="${item.id}">加入购物车</div>
+                </div>
+            </div>
+                    `;
+                }
+            })
+
+            let jia = document.querySelector('.jia');
+            let jian = document.querySelector('.jian');
+            let shopNum = document.querySelector('.shopNum');
+
+            let myCarN = document.querySelector('.myCarN');
+            let user = localStorage.getItem('username');
+            myCarNum();
+            function myCarNum() {
+                $.get('../api/getCar.php', {
+                    username: user
+                }, function (res) {
+                    res = JSON.parse(res);
+                    myCarN.innerHTML = res.length;
+                })
+            }
+
+            shopNum.onblur = function () {
+                if (shopNum.value * 1 < 1) {
+                    shopNum.value = 1;
+                }
+            }
+            jia.onclick = function () {
+                shopNum.value = shopNum.value * 1 + 1;
+            }
+
+            jian.onclick = function () {
+                if (shopNum.value * 1 <= 1) {
+                    alert('数量不能再减少了！');
+                    shopNum.value = 1;
+                } else {
+                    shopNum.value = shopNum.value * 1 - 1;
+                }
+            }
+
+            $('.addCar').on('click', function () {
+                let user = localStorage.getItem('username');
+                let idx = $('.addCar').attr('idx');
+                $.get('../api/addCar.php', {
+                    username: user,
+                    shopId: idx,
+                    shopNum: $('.shopNum').val()
+                }, function (res) {
+                    alert(res);
+                    myCarNum();
+                })
+            })
+
+            var mySwiper = new Swiper('.gallery-top', {
+                autoplay: true
+            });
+
+            var galleryThumbs = new Swiper('.gallery-thumbs', {
+                spaceBetween: 4,
+                slidesPerView: 4,
+                freeMode: true,
+                watchSlidesVisibility: true,
+                watchSlidesProgress: true,
+            });
+            var galleryTop = new Swiper('.gallery-top', {
+                spaceBetween: 0,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                thumbs: {
+                    swiper: galleryThumbs
+                }
+            });
+        }</script><script src="../js/jiaxianDenglu.js"></script></body>
